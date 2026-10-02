@@ -1,5 +1,5 @@
 #include <iostream>
-#include "linux_i2c_bus.h"
+#include "drivers/linux_i2c_bus.h"
 
 int main() {
   LinuxI2CBus bus("/dev/i2c-1", 0x68);

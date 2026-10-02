@@ -1,6 +1,6 @@
 #pragma once
 
-#include "i2c_bus.h"
+#include "drivers/i2c_bus.h"
 
 class LinuxI2CBus: public I2CBus {
 

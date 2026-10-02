@@ -6,7 +6,7 @@
 #include <cstring>
 #include <system_error>
 
-#include "linux_i2c_bus.h"
+#include "drivers/linux_i2c_bus.h"
 
   LinuxI2CBus::LinuxI2CBus(const char *busPath, std::uint8_t imuAddress) {
     busPath_ = busPath;
