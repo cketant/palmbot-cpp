@@ -1,6 +1,8 @@
 #include <iostream>
+#include "linux_i2c_bus.h"
 
 int main() {
-  std::cout << "HELLO WORLD";
+  LinuxI2CBus bus("/dev/i2c-1", 0x68);
+  bus.whoAmI(0x75);
   return 0;
 }
