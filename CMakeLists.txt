@@ -6,10 +6,16 @@ add_executable(Main)
 target_sources(Main
   PRIVATE
     src/config/pins.h
-    src/drivers/i2c_bus.h
-    src/drivers/linux_i2c_bus.h
+
+    src/hal/i2c_bus.h
+    src/hal/i2c_device.h
+    src/hal/linux_i2c_bus.h
+    src/hal/linux_i2c_bus.cpp
+
+    src/drivers/mpu6050.h
+    src/drivers/mpu6050.cpp
+    
     src/main.cpp
-    src/drivers/linux_i2c_bus.cpp
 )
 
 target_include_directories(Main

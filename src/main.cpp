@@ -1,8 +1,11 @@
 #include <iostream>
-#include "drivers/linux_i2c_bus.h"
+#include "hal/linux_i2c_bus.h"
+#include "drivers/mpu6050.h"
 
 int main() {
-  LinuxI2CBus bus("/dev/i2c-1", 0x68);
-  bus.whoAmI(0x75);
+  LinuxI2CBus bus("/dev/i2c-1");
+  MPU6050 mpu6050(bus);
+  mpu6050.whoAmI();
+  
   return 0;
 }

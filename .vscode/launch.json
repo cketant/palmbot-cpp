@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Main",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/Main",
+      "cwd": "${workspaceFolder}",
+      "MIMode": "gdb",
+      "preLaunchTask": "cmake build"
+    }
+  ]
+}
