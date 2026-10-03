@@ -4,7 +4,9 @@
 #include <system_error>
 
 
-MPU6050::MPU6050(I2CBus& bus, const std::uint8_t deviceAddr, const std::string deviceName) : I2CDevice(bus, deviceAddr, deviceName) {}
+MPU6050::MPU6050(I2CBus& bus, 
+  const std::uint8_t deviceAddr, 
+  const std::string deviceName) : I2CDevice(bus, deviceAddr, deviceName) {}
 
 void MPU6050::whoAmI() {
   std::uint8_t whoamiBuff[1];
