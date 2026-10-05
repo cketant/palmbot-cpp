@@ -6,27 +6,38 @@ project(Palmbot)
 
 option(PALMBOT_BUILD_TESTS "Build unit tests" OFF)
 
-add_executable(Main)
-target_sources(Main
+# PalmCore
+add_library(PalmCore)
+target_sources(PalmCore
   PRIVATE
+    src/hal/linux_i2c_bus.cpp
+    src/drivers/mpu6050.cpp
+  PUBLIC
     src/config/pins.h
 
     src/hal/i2c_bus.h
     src/hal/i2c_device.h
     src/hal/linux_i2c_bus.h
-    src/hal/linux_i2c_bus.cpp
 
     src/drivers/mpu6050.h
-    src/drivers/mpu6050.cpp
-    
-    src/main.cpp
 )
-
-target_include_directories(Main
-  PRIVATE
+target_include_directories(PalmCore
+  PUBLIC
     src/
 )
 
+# Main
+add_executable(Main)
+target_sources(Main
+  PRIVATE
+    src/main.cpp
+)
+target_link_libraries(Main
+  PRIVATE
+    PalmCore
+)
+
+# PalmTest
 if(PALMBOT_BUILD_TESTS)
   include(FetchContent)
   FetchContent_Declare(
@@ -37,8 +48,24 @@ if(PALMBOT_BUILD_TESTS)
 
   enable_testing()
 
-  add_executable(PalmTest tests/test.cpp)
-  target_link_libraries(PalmTest PRIVATE GTest::gtest_main)
+  add_executable(PalmTest)
+  target_sources(PalmTest
+    PRIVATE
+      tests/drivers/mpu6050_test.cpp
+      tests/mocks/hal/i2c_bus.h
+
+  )
+  target_link_libraries(PalmTest 
+    PRIVATE 
+      GTest::gtest_main
+      GTest::gmock_main
+      PalmCore
+  )
+  target_include_directories(PalmTest
+    PRIVATE
+      tests/
+      src/
+  )
 
   include(GoogleTest)
   gtest_discover_tests(PalmTest)

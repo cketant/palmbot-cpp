@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <system_error>
 #include <array>
+#include <chrono>
 
 #include "hal/i2c_bus.h"
 #include "hal/i2c_device.h"
@@ -39,15 +40,19 @@ class MPU6050: public I2CDevice {
       /**
        * Acceleration measured as m/s^2
        */
-      float accel = 0;
+      float accel{0};
       /**
        * Radians per second
        */
-      float angularRate = 0;
+      float angularRate{0};
       /**
        * Temperature in Celsius
        */
-      float tempC = 0;
+      float tempC{0};
+      /**
+       * Timestamp when measurement taken
+       */
+      std::chrono::steady_clock::time_point timestamp{};
     };
 
     /**
