@@ -10,9 +10,9 @@ class LinuxI2CBus: public I2CBus {
 
     ~LinuxI2CBus() override;
 
-    bool readReg(std::uint8_t deviceAddr, std::uint8_t cursorReg, std::uint8_t len, std::uint8_t *in) override;
+    bool readReg(std::uint8_t deviceAddr, std::uint8_t cursorReg, std::span<std::uint8_t> in) override;
     
-    bool writeReg(std::uint8_t deviceAddr, std::uint8_t len, std::uint8_t *out) override;
+    bool writeReg(std::uint8_t deviceAddr, std::span<std::uint8_t> out) override;
 
 
   private:

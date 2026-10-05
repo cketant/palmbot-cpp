@@ -6,6 +6,7 @@ int main() {
   LinuxI2CBus bus("/dev/i2c-1");
   MPU6050 mpu6050(bus);
   mpu6050.whoAmI();
+
   
   return 0;
 }
