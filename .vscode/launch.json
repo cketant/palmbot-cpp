@@ -8,7 +8,7 @@
       "program": "${workspaceFolder}/build/Main",
       "cwd": "${workspaceFolder}",
       "MIMode": "gdb",
-      "preLaunchTask": "cmake build"
+      "preLaunchTask": "cmake --build build"
     }
   ]
 }

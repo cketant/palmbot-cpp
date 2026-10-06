@@ -13,8 +13,9 @@ class I2CBus {
      */
     virtual bool readReg(std::uint8_t deviceAddr, std::uint8_t cursorReg, std::span<std::uint8_t> in) = 0;
     
-
     /**
+     * The first byte in the out buffer sets the cursor to the register. The remaining bytes
+     * are set to the each register at the cursor register then the following registers.
      * @param deviceAddr Address of the device on I2C bus
      * @param out The out buffer
      */

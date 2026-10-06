@@ -33,19 +33,22 @@
     // ioctl returns # of messages sent
     int sentCount = ioctl(fd_, I2C_RDWR, &data);
     if (sentCount != msgsCount) { 
-      std::runtime_error("Read & Write Failed.");
+      throw std::runtime_error("Read & Write Failed.");
       return false;
     }
     return true;
   }
 
   bool LinuxI2CBus::writeReg(std::uint8_t deviceAddr, std::span<std::uint8_t> out) {
-    i2c_msg msg = {deviceAddr, 0, out.size(), out.data()};
-    i2c_rdwr_ioctl_data data = {&msg, 1};
+    // 1st byte in the out buffer sets the cursor register
+    i2c_msg msgs[1] = {
+      {deviceAddr, 0, out.size(), out.data()}
+    };
+    i2c_rdwr_ioctl_data data = {msgs, 1};
     // ioctl returns # of messages sent
     int sentCount = ioctl(fd_, I2C_RDWR, &data);
     if (sentCount != 1) {
-      std::runtime_error("Write Failed.");
+      throw std::runtime_error("Write Failed.");
       return false;
     }
     return true;

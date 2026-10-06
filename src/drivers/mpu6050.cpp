@@ -5,7 +5,14 @@
 
 MPU6050::MPU6050(I2CBus& bus, 
   const std::uint8_t deviceAddr, 
-  const std::string deviceName) : I2CDevice(bus, deviceAddr, deviceName) {}
+  const std::string deviceName) : I2CDevice(bus, deviceAddr, deviceName) {
+    wake();
+  }
+
+MPU6050::~MPU6050() {
+  std::array<uint8_t, 2> turnOff = {0x68, 0x40};
+  bus_.writeReg(addr_, turnOff);
+}
 
 std::uint8_t MPU6050::whoAmI() {
   std::array<std::uint8_t, 1> whoamiBuff{};
@@ -22,6 +29,11 @@ std::uint8_t MPU6050::whoAmI() {
 bool MPU6050::readData() {
   bool result = bus_.readReg(addr_, 0x3B, data_);
   return result;
+}
+
+bool MPU6050::wake() {
+  std::array<uint8_t, 3> wakeData{0x6B, 0x21, 0x80};
+  return bus_.writeReg(addr_, wakeData);
 }
 
 const MPU6050::Measurement MPU6050::latest() const {

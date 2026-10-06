@@ -1,6 +1,14 @@
 {
   "tasks": [
     {
+      "type": "shell",
+      "label": "cmake --build build",
+      "command": "cmake --build build --target Main",
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
       "type": "cppbuild",
       "label": "C/C++: g++ build active file",
       "command": "/usr/bin/g++",

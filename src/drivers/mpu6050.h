@@ -18,6 +18,13 @@ class MPU6050: public I2CDevice {
     std::uint8_t whoAmI() override;
 
     /**
+     * Take the sensor out of sleep mode (it powers up asleep, and
+     * the data registers read zero until this is called).
+     * Call once before readData().
+     */
+    bool wake();
+
+    /**
     Read the data registers from the sensor
       3B ACCEL_XOUT_H
       3C ACCEL_XOUT_L
@@ -61,6 +68,8 @@ class MPU6050: public I2CDevice {
      * @return Measurement 
      */
     const Measurement latest() const;
+
+    ~MPU6050() override;
 
   private:
     /**
