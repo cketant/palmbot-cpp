@@ -22,6 +22,11 @@ class I2CDevice {
      */
     virtual bool readData() = 0;
 
+    /**
+     * Configure the device 
+     */
+    virtual bool configure() = 0;
+
   protected:
     /**
      * I2C Bus

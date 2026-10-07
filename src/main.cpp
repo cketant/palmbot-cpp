@@ -8,9 +8,10 @@ int main() {
   try {
     LinuxI2CBus bus("/dev/i2c-1");
     MPU6050 mpu6050(bus);
-    // Sleep here
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    mpu6050.readData();
+    while (true) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      mpu6050.readData();
+    };
   } catch (const std::exception& e) {
     std::cerr << "Error: " << e.what() << '\n';
     return 1;
