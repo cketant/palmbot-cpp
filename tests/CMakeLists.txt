@@ -13,6 +13,7 @@ if(PALMBOT_BUILD_TESTS)
   target_sources(PalmTest
     PRIVATE
       drivers/mpu6050_test.cpp
+      lib/conversion_math_test.cpp
       mocks/hal/i2c_bus.h
   )
   

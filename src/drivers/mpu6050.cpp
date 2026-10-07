@@ -1,7 +1,9 @@
-#include "drivers/mpu6050.h"
 #include <iostream>
 #include <system_error>
 #include <array>
+
+#include "drivers/mpu6050.h"
+#include "lib/conversion_math.h"
 
 MPU6050::MPU6050(I2CBus& bus,
   const std::uint8_t deviceAddr, 
@@ -56,31 +58,19 @@ bool MPU6050::readData() {
   // GYRO Z [12,13]
   std::int16_t gyroZ = static_cast<std::int16_t>((data_[12]<<8) | data_[13]); 
 
-  m_.accelX = convertToMPS2(accelX);
-  m_.accelX = convertToMPS2(accelY);
-  m_.accelX = convertToMPS2(accelZ);
+  m_.accelX = ConversionMath::convertToMPS2(accelX);
+  m_.accelX = ConversionMath::convertToMPS2(accelY);
+  m_.accelX = ConversionMath::convertToMPS2(accelZ);
 
-  m_.tempC = convertToCelsius(temp);
+  m_.tempC = ConversionMath::convertToCelsius(temp);
 
-  m_.angularVelX = convertToAngularVel(gyroX);
-  m_.angularVelY = convertToAngularVel(gyroY);
-  m_.angularVelZ = convertToAngularVel(gyroZ);
+  m_.angularVelX = ConversionMath::convertToAngularVel(gyroX);
+  m_.angularVelY = ConversionMath::convertToAngularVel(gyroY);
+  m_.angularVelZ = ConversionMath::convertToAngularVel(gyroZ);
 
   m_.timestamp = std::chrono::steady_clock::now();
 
   return true;
-}
-
-float MPU6050::convertToMPS2(int16_t gravity) const {
-  return (gravity / MPU6050::ACCEL_LSB) * MPU6050::GRAVITY;
-}
-
-float MPU6050::convertToAngularVel(int16_t degreesPerSec) const {
-  return (degreesPerSec / MPU6050::GYRO_LSB) * MPU6050::DEG_TO_RAD;
-}
-
-float MPU6050::convertToCelsius(int16_t raw) const {
-  return (raw / 340) + 36.53;
 }
 
 bool MPU6050::wake() {

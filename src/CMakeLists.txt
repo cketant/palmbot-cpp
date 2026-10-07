@@ -4,6 +4,7 @@ target_sources(PalmCore
   PRIVATE
     hal/linux_i2c_bus.cpp
     drivers/mpu6050.cpp
+    lib/conversion_math.cpp
   PUBLIC
     config/pins.h
 
@@ -12,6 +13,8 @@ target_sources(PalmCore
     hal/linux_i2c_bus.h
 
     drivers/mpu6050.h
+
+    lib/conversion_math.h
 )
 target_include_directories(PalmCore
   PUBLIC
