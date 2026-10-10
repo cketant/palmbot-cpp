@@ -40,6 +40,10 @@ class I2CDevice {
      * The name of the device/sensor
      */
     const std::string deviceName_;
+    /**
+     * Register for the WHO_AM_I identifier for device
+     */
+    static constexpr uint8_t WHO_AM_I_REG = 0x75;
 
     virtual ~I2CDevice() = default;
 

@@ -13,13 +13,18 @@ MPU6050::MPU6050(I2CBus& bus,
   }
 
 MPU6050::~MPU6050() {
-  std::array<uint8_t, 2> turnOff = {0x6B, 0x40};
+  // Turn off the FIFO Buffer and Reset the FIFO Buffer
+  std::array<std::uint8_t, 2> fifoBuff{FIFO_EN_REGISTER, 0x04};
+  bus_.writeReg(addr_, fifoBuff);
+
+  // Sleep the sensor
+  std::array<uint8_t, 2> turnOff{PWR_MGMT_1_REG, 0x41};
   bus_.writeReg(addr_, turnOff);
 }
 
 std::uint8_t MPU6050::whoAmI() {
   std::array<std::uint8_t, 1> whoamiBuff{};
-  bool result = bus_.readReg(addr_, 0x75, whoamiBuff);
+  bool result = bus_.readReg(addr_, WHO_AM_I_REG, whoamiBuff);
   if (result) {
     printf("%s - WHO_AM_I: 0x%02X\n", deviceName_.c_str(), whoamiBuff[0]);
     return whoamiBuff[0];
@@ -30,6 +35,25 @@ std::uint8_t MPU6050::whoAmI() {
 }
 
 bool MPU6050::configure() {
+  // Configure the DLPF to 1kHz, 2.8ms delay, 98 bandwidth hz
+  // See Register 26 docs
+  std::array<std::uint8_t, 2> dlpfBuff{DLPF_CONFIG_REG, 0x02};
+  if (!bus_.writeReg(addr_, dlpfBuff)) return false;
+
+  // Set the sample rate by setting the Sample Rate Divider = 100Hz
+  // See Register 25 docs
+  std::array<std::uint8_t, 2> sampleRateBuff{SMPLRT_DIV_REG, 0x10};
+  if (!bus_.writeReg(addr_, sampleRateBuff)) return false;
+
+  // Enable the FIFO
+  // See register 106 docs
+  std::array<std::uint8_t, 2> enableFifoBuff{USR_CTRL_REGISTER, 0x40};
+  if (!bus_.writeReg(addr_, enableFifoBuff)) return false;
+  
+  // Set which sensor values get thrown in the FIFO buffer
+  // See register 35
+  std::array<std::uint8_t, 2> fifoBuff{FIFO_EN_REGISTER, 0xF8};
+  if (!bus_.writeReg(addr_, fifoBuff)) return false;
   return true;
 }
 
@@ -74,10 +98,6 @@ bool MPU6050::readData() {
 }
 
 bool MPU6050::wake() {
-  std::array<uint8_t, 3> wakeData{0x6B, 0x21, 0x00};
+  std::array<uint8_t, 3> wakeData{PWR_MGMT_1_REG, 0x21, 0x01};
   return bus_.writeReg(addr_, wakeData);
-}
-
-const MPU6050::Measurement MPU6050::latest() const {
-  return m_;
 }
