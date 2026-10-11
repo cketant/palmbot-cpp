@@ -62,8 +62,9 @@ bool MPU6050::configure() {
 std::optional<Measurement> MPU6050::measurement() {
   // 1st Read the count
   std::array<uint8_t, 2> fifoCountBuff {};
+  std::chrono::steady_clock::time_point now {std::chrono::steady_clock::now()};
   if (!bus_.readReg(addr_, FIFO_COUNT_H_REG, fifoCountBuff)) return std::nullopt;
-  std::int16_t fifoCount = static_cast<std::int16_t>((fifoCountBuff[0]<<8) | fifoCountBuff[1]); 
+  std::uint16_t fifoCount = static_cast<std::uint16_t>((fifoCountBuff[0]<<8) | fifoCountBuff[1]); 
 
   // Nothing to read
   if (fifoCount < 14) return std::nullopt;
@@ -105,19 +106,22 @@ std::optional<Measurement> MPU6050::measurement() {
   m_.angularVelY = ConversionMath::convertToAngularVel(gyroY);
   m_.angularVelZ = ConversionMath::convertToAngularVel(gyroZ);
 
-  return Measurement{std::chrono::steady_clock::now(), m_};
+  return Measurement{now, m_};
 }
 
 bool MPU6050::wake() {
-  std::array<uint8_t, 3> wakeData{PWR_MGMT_1_REG, 0x01};
-  return bus_.writeReg(addr_, wakeData);
+  std::array<uint8_t, 2> wakeData{PWR_MGMT_1_REG, 0x01};
+  if (!bus_.writeReg(addr_, wakeData)) return false;
+  // Sleep for changes to take
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  return true;
 }
 
 bool MPU6050::reset() {
   std::array<uint8_t, 2> resetData{PWR_MGMT_1_REG, 0x80};
   if (!bus_.writeReg(addr_, resetData)) return false;
 
-  // Bit 7 self-clears when the reset finishes. The datasheet recommends ~100 ms.
+  // Sleep for changes to take
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   return true;
 }

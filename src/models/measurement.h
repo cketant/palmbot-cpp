@@ -36,7 +36,6 @@ struct IMUMeasurement {
   float tempC{0};
 };
 
-
 struct Measurement {
   std::chrono::steady_clock::time_point timestamp{};
   std::variant<IMUMeasurement> data;

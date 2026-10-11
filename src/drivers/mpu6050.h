@@ -7,7 +7,7 @@
 
 #include "hal/i2c_bus.h"
 #include "hal/i2c_device.h"
-#include "models/SPSCQueue.h"
+#include "lib/SPSCQueue.h"
 
 class MPU6050: public I2CDevice {
 
