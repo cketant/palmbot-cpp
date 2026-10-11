@@ -25,13 +25,15 @@ int main() {
     }};
 
     std::jthread loggerThread([&](std::stop_token st) {
+      std::optional<std::chrono::steady_clock::time_point> t0;
       while (true) {
         bool isStopping = st.stop_requested();
         if (Measurement* m = queue.front()) {
           // log m
           if (const auto* imu = std::get_if<IMUMeasurement>(&m->data)) {
-            auto time = std::chrono::duration<double>(m->timestamp.time_since_epoch()).count();
-            std::cout << "Time: " << time << "s | " << "Temperature: " << imu->tempC << std::endl;
+            if (!t0) t0 = m->timestamp;
+            auto elapsedTime = std::chrono::duration<double>(m->timestamp - t0.value()).count();
+            std::cout << "Time: " << elapsedTime << "s | " << "Temperature: " << imu->tempC << std::endl;
           }
           queue.pop();
         } else if (isStopping && !queue.front()) {
