@@ -11,10 +11,10 @@ int main() {
     rigtorp::SPSCQueue<Measurement> queue(1024);
 
     std::chrono::steady_clock::time_point::duration period = std::chrono::milliseconds(10);
-    std::chrono::steady_clock::time_point next = std::chrono::steady_clock::now();
-
-    std::jthread imuThread{[&](std::stop_token st){
-      while(!st.stop_requested()) {
+    std::jthread imuThread{[&](){
+      auto timerStart = std::chrono::steady_clock::now();
+      auto next = std::chrono::steady_clock::now();
+      while((std::chrono::steady_clock::now() - timerStart) <= std::chrono::seconds(30)) {
         next += period;
         auto m = mpu6050.measurement();
         if (m) {
@@ -24,10 +24,21 @@ int main() {
       }
     }};
 
+    std::jthread loggerThread([&](std::stop_token st) {
+      while (true) {
+        bool isStopping = st.stop_requested();
+        if (Measurement* m = queue.front()) {
+          // log m
+        } else if (isStopping && !queue.front()) {
+          break;
+        } else {
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+      }
+    });
 
-    // while (true) {
-    //   std::optional<Measurement> m = mpu6050.measurement();
-    // };
+    imuThread.join();
+    loggerThread.request_stop();
   } catch (const std::exception& e) {
     std::cerr << "Error: " << e.what() << '\n';
     return 1;
