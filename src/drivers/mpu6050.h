@@ -7,7 +7,7 @@
 
 #include "hal/i2c_bus.h"
 #include "hal/i2c_device.h"
-#include "lib/SPSCQueue.h"
+#include "models/SPSCQueue.h"
 
 class MPU6050: public I2CDevice {
 
@@ -62,12 +62,17 @@ class MPU6050: public I2CDevice {
      * the data registers read zero until this is called).
      * Call once before readData().
      */
-    bool wake();
+    bool wake() override;
+
+    /**
+     * Reset the device to default values
+     */
+    bool reset() override;
 
     /**
     Read the data registers from the sensor
     */
-    bool readData() override;
+    std::optional<Measurement> measurement() override;
     
     /**
      * Configure the sensor
@@ -78,44 +83,6 @@ class MPU6050: public I2CDevice {
      */
     std::uint8_t whoAmI() override;
     
-    /**
-     * Measurements from the sensor
-     */
-    struct Measurement {
-      /**
-       * Acceleration measured as m/s^2
-       */
-      float accelX{0};
-      /**
-       * Acceleration measured as m/s^2
-       */
-      float accelY{0};
-      /**
-       * Acceleration measured as m/s^2
-       */
-      float accelZ{0};
-      /**
-       * Radians per second
-       */
-      float angularVelX{0};
-      /**
-       * Radians per second
-       */
-      float angularVelY{0};
-      /**
-       * Radians per second
-       */
-      float angularVelZ{0};
-      /**
-       * Temperature in Celsius
-       */
-      float tempC{0};
-      /**
-       * Timestamp when measurement taken
-       */
-      std::chrono::steady_clock::time_point timestamp{};
-    };
-
   private:
     /**
     The buffer for all the data registers of the sensor
@@ -124,6 +91,6 @@ class MPU6050: public I2CDevice {
     /**
      * The latest measurement taken
      */
-    Measurement m_{};
+    IMUMeasurement m_{};
 
 };

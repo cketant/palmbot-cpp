@@ -15,6 +15,9 @@ target_sources(PalmCore
     drivers/mpu6050.h
 
     lib/conversion_math.h
+
+    models/measurement.h
+    models/SPSCQueue.h
 )
 target_include_directories(PalmCore
   PUBLIC

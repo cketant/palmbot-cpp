@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "hal/i2c_bus.h"
+#include "models/measurement.h"
 
 class I2CDevice {
 
@@ -17,16 +18,25 @@ class I2CDevice {
     virtual std::uint8_t whoAmI() = 0;
 
     /**
-     * Read the data from the device include performing
-     * the calculations to get the device measurements
+     * Read the sensor data and return the measurements
      */
-    virtual bool readData() = 0;
+    virtual std::optional<Measurement> measurement() = 0;
 
     /**
      * Configure the device 
      */
     virtual bool configure() = 0;
 
+    /**
+     * Wake the device
+     */
+    virtual bool wake() = 0;
+
+    /**
+     * Reset the registers of the device
+     */
+    virtual bool reset() = 0;
+    
   protected:
     /**
      * I2C Bus

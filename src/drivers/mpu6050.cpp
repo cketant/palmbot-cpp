@@ -1,6 +1,7 @@
 #include <iostream>
 #include <system_error>
 #include <array>
+#include <thread>
 
 #include "drivers/mpu6050.h"
 #include "lib/conversion_math.h"
@@ -8,13 +9,14 @@
 MPU6050::MPU6050(I2CBus& bus,
   const std::uint8_t deviceAddr, 
   const std::string deviceName) : I2CDevice(bus, deviceAddr, deviceName) {
-    configure();
+    reset();
     wake();
+    configure();
   }
 
 MPU6050::~MPU6050() {
   // Turn off the FIFO Buffer and Reset the FIFO Buffer
-  std::array<std::uint8_t, 2> fifoBuff{FIFO_EN_REGISTER, 0x04};
+  std::array<std::uint8_t, 2> fifoBuff{USR_CTRL_REGISTER, 0x04};
   bus_.writeReg(addr_, fifoBuff);
 
   // Sleep the sensor
@@ -42,7 +44,7 @@ bool MPU6050::configure() {
 
   // Set the sample rate by setting the Sample Rate Divider = 100Hz
   // See Register 25 docs
-  std::array<std::uint8_t, 2> sampleRateBuff{SMPLRT_DIV_REG, 0x10};
+  std::array<std::uint8_t, 2> sampleRateBuff{SMPLRT_DIV_REG, 0x9};
   if (!bus_.writeReg(addr_, sampleRateBuff)) return false;
 
   // Enable the FIFO
@@ -57,9 +59,20 @@ bool MPU6050::configure() {
   return true;
 }
 
-bool MPU6050::readData() {
-  bool result = bus_.readReg(addr_, 0x3B, data_);
-  if (!result) return false;
+std::optional<Measurement> MPU6050::measurement() {
+  // 1st Read the count
+  std::array<uint8_t, 2> fifoCountBuff {};
+  if (!bus_.readReg(addr_, FIFO_COUNT_H_REG, fifoCountBuff)) return std::nullopt;
+  std::int16_t fifoCount = static_cast<std::int16_t>((fifoCountBuff[0]<<8) | fifoCountBuff[1]); 
+
+  // Nothing to read
+  if (fifoCount < 14) return std::nullopt;
+
+  // 2nd Read the Sensor data
+  //
+  // read from the senors realtime use - 0x3B
+  // read from the FIFO use - 0x74
+  if (!bus_.readReg(addr_, FIFO_BUFF_REG, data_)) return std::nullopt;
 
   // ACCEL X [0,1]
   std::int16_t accelX = static_cast<std::int16_t>((data_[0]<<8) | data_[1]); 
@@ -83,8 +96,8 @@ bool MPU6050::readData() {
   std::int16_t gyroZ = static_cast<std::int16_t>((data_[12]<<8) | data_[13]); 
 
   m_.accelX = ConversionMath::convertToMPS2(accelX);
-  m_.accelX = ConversionMath::convertToMPS2(accelY);
-  m_.accelX = ConversionMath::convertToMPS2(accelZ);
+  m_.accelY = ConversionMath::convertToMPS2(accelY);
+  m_.accelZ = ConversionMath::convertToMPS2(accelZ);
 
   m_.tempC = ConversionMath::convertToCelsius(temp);
 
@@ -92,12 +105,19 @@ bool MPU6050::readData() {
   m_.angularVelY = ConversionMath::convertToAngularVel(gyroY);
   m_.angularVelZ = ConversionMath::convertToAngularVel(gyroZ);
 
-  m_.timestamp = std::chrono::steady_clock::now();
-
-  return true;
+  return Measurement{std::chrono::steady_clock::now(), m_};
 }
 
 bool MPU6050::wake() {
-  std::array<uint8_t, 3> wakeData{PWR_MGMT_1_REG, 0x21, 0x01};
+  std::array<uint8_t, 3> wakeData{PWR_MGMT_1_REG, 0x01};
   return bus_.writeReg(addr_, wakeData);
+}
+
+bool MPU6050::reset() {
+  std::array<uint8_t, 2> resetData{PWR_MGMT_1_REG, 0x80};
+  if (!bus_.writeReg(addr_, resetData)) return false;
+
+  // Bit 7 self-clears when the reset finishes. The datasheet recommends ~100 ms.
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  return true;
 }
