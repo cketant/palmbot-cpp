@@ -4,6 +4,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(Palmbot)
 
+# Default to Debug (single-config generators) unless the user specifies one
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
+endif()
+
 option(PALMBOT_BUILD_TESTS "Build unit tests" OFF)
 
 add_subdirectory(tests)
