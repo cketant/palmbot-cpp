@@ -18,7 +18,7 @@ int main() {
         next += period;
         auto m = mpu6050.measurement();
         if (m) {
-          queue.try_push(m.value());
+          if (!queue.try_push(m.value())) std::cout << "Failed Push";
         }
         std::this_thread::sleep_until(next);
       }
@@ -29,6 +29,11 @@ int main() {
         bool isStopping = st.stop_requested();
         if (Measurement* m = queue.front()) {
           // log m
+          if (const auto* imu = std::get_if<IMUMeasurement>(&m->data)) {
+            auto time = std::chrono::duration<double>(m->timestamp.time_since_epoch()).count();
+            std::cout << "Time: " << time << "s | " << "Temperature: " << imu->tempC << std::endl;
+          }
+          queue.pop();
         } else if (isStopping && !queue.front()) {
           break;
         } else {
