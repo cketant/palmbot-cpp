@@ -3,7 +3,10 @@ add_library(PalmCore)
 target_sources(PalmCore
   PRIVATE
     hal/linux_i2c_bus.cpp
+
     drivers/mpu6050.cpp
+    drivers/vl53l0x.cpp
+    
     lib/conversion_math.cpp
   PUBLIC
     config/pins.h
@@ -13,6 +16,7 @@ target_sources(PalmCore
     hal/linux_i2c_bus.h
 
     drivers/mpu6050.h
+    drivers/vl53l0x.h
 
     lib/conversion_math.h
     lib/SPSCQueue.h

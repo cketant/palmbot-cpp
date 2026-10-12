@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdio>
 #include <string.h>
+#include <optional>
 
 #include "hal/i2c_bus.h"
 #include "models/measurement.h"

@@ -3,7 +3,7 @@
 #include <variant>
 
 /**
- * Measurements from the sensor
+ * Measurements from the MPU6050
  */
 struct IMUMeasurement {
   /**
@@ -36,7 +36,17 @@ struct IMUMeasurement {
   float tempC{0};
 };
 
+/**
+ * Measurement from the VL53L0X
+ */
+struct TOFMeasurement {
+  /**
+   * Distance to the nearest object
+   */
+  float distance {0};
+};
+
 struct Measurement {
   std::chrono::steady_clock::time_point timestamp{};
-  std::variant<IMUMeasurement> data;
+  std::variant<IMUMeasurement, TOFMeasurement> data;
 };
