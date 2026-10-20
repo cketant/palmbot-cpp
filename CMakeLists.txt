@@ -9,6 +9,17 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
 endif()
 
+############ Building and Running Tests ############
+# cmake -S . -B build_tests -DPALMBOT_BUILD_TESTS=ON
+# cmake --build build_tests
+# ctest --test-dir build_tests/tests/ --output-on-failure
+####################################################
+
+############ Building and Running clang-tidy ############
+#  cmake -S . -B build_clang_tidy -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+#  run-clang-tidy -p build_clang_tidy
+####################################################
+
 option(PALMBOT_BUILD_TESTS "Build unit tests" OFF)
 
 add_subdirectory(tests)
