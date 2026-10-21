@@ -47,6 +47,6 @@ struct TOFMeasurement {
 };
 
 struct Measurement {
-  std::chrono::steady_clock::time_point timestamp{};
+  std::chrono::steady_clock::time_point timestamp;
   std::variant<IMUMeasurement, TOFMeasurement> data;
 };

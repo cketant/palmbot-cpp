@@ -18,6 +18,8 @@ endif()
 ############ Building and Running clang-tidy ############
 #  cmake -S . -B build_clang_tidy -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 #  run-clang-tidy -p build_clang_tidy
+# clang-tidy -p build_clang_tidy <INDIVIDUAL_FILE> (Run against a single file)
+# clang-tidy -p build_clang_tidy --fix <INDIVIDUAL_FILE> (Apply fixes against a single file)
 ####################################################
 
 option(PALMBOT_BUILD_TESTS "Build unit tests" OFF)
