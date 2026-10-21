@@ -20,13 +20,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cmake clang-tidy
 
-      - name: Configure (export compile commands)
-        run: cmake -S . -B build_clang_tidy -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      - name: Configure (clang-tidy enabled)
+        run: cmake --preset lint
 
-      - name: Run clang-tidy
+      - name: Run clang-tidy (via build)
         run: |
           set -o pipefail
-          run-clang-tidy -p build_clang_tidy -quiet 'src/.*\.cpp$' 2>&1 | tee clang-tidy.log
+          cmake --build --preset lint 2>&1 | tee clang-tidy.log
 
       - name: Upload log on failure
         if: failure()

@@ -10,5 +10,5 @@ float ConversionMath::convertToAngularVel(int16_t degreesPerSec) {
 }
 
 float ConversionMath::convertToCelsius(int16_t raw) {
-  return (static_cast<float>(raw) / 340.0f) + 36.53f;
+  return (static_cast<float>(raw) / 340.0F) + 36.53F;
 }

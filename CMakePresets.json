@@ -1,0 +1,106 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "./build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "build",
+      "inherits": "base"
+    },
+    {
+      "name": "lint",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "tsan",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-fsanitize=thread -g -O1 -fno-omit-frame-pointer",
+        "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=thread",
+        "CMAKE_SHARED_LINKER_FLAGS": "-fsanitize=thread"
+      }
+    },
+    {
+      "name": "asan",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-fsanitize=address -g -O1 -fno-omit-frame-pointer",
+        "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address",
+        "CMAKE_SHARED_LINKER_FLAGS": "-fsanitize=address"
+      }
+    },
+    {
+      "name": "test",
+      "inherits": "base",
+      "cacheVariables": {
+        "PALMBOT_BUILD_TESTS": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build",
+      "configurePreset": "build"
+    },
+    {
+      "name": "lint",
+      "configurePreset": "lint"
+    },
+    {
+      "name": "tsan",
+      "configurePreset": "tsan"
+    },
+    {
+      "name": "asan",
+      "configurePreset": "asan"
+    },
+    {
+      "name": "test",
+      "configurePreset": "test",
+      "targets": ["PalmTest"]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "test",
+      "configurePreset": "test",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "test",
+      "steps": [
+        { "type": "configure", "name": "test" },
+        { "type": "build", "name": "test" },
+        { "type": "test", "name": "test" }
+      ]
+    },
+    {
+      "name": "tsan",
+      "steps": [
+        {"type": "configure", "name": "tsan" },
+        {"type": "build", "name": "tsan" }
+      ]
+    },
+    {
+      "name": "asan",
+      "steps": [
+        {"type": "configure", "name": "asan" },
+        {"type": "build", "name": "asan" }
+      ]
+    }
+  ]
+}

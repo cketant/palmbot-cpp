@@ -12,7 +12,7 @@ endif()
 ############ Building and Running Tests ############
 # cmake -S . -B build_tests -DPALMBOT_BUILD_TESTS=ON
 # cmake --build build_tests
-# ctest --test-dir build_tests/tests/ --output-on-failure
+# ctest --test-dir build_tests --output-on-failure
 ####################################################
 
 ############ Building and Running clang-tidy ############
@@ -23,6 +23,11 @@ endif()
 ####################################################
 
 option(PALMBOT_BUILD_TESTS "Build unit tests" OFF)
+
+# Must be in the top-level CMakeLists so ctest finds the tests from the build root
+if(PALMBOT_BUILD_TESTS)
+  enable_testing()
+endif()
 
 add_subdirectory(tests)
 add_subdirectory(src)

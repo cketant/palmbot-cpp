@@ -1,17 +1,18 @@
 #pragma once
 
 #include <cstdint>
+#include <numbers>
 
 class ConversionMath {
   public:
     /**
      * m/s² per g 
      */
-    static constexpr float GRAVITY = 9.80665f;
+    static constexpr float GRAVITY = 9.80665F;
     /**
      * Degrees to Rand
      */
-    static constexpr float DEG_TO_RAD = 3.14159265f / 180.f;
+    static constexpr float DEG_TO_RAD = std::numbers::pi_v<float> / 180.F;
     /**
      * Convert g to Meters per Second squared
      */

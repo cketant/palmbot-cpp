@@ -21,17 +21,17 @@ jobs:
           sudo apt-get install -y build-essential cmake
 
       - name: Configure (tests enabled)
-        run: cmake -S . -B build -DPALMBOT_BUILD_TESTS=ON
+        run: cmake --preset test
 
       - name: Build tests
-        run: cmake --build build --target PalmTest
+        run: cmake --build --preset test
 
       - name: Run tests
-        run: ctest --test-dir build --output-on-failure --output-junit test-report.xml
+        run: ctest --preset test --output-junit test-report.xml
 
       - name: Upload test report on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: test-report
-          path: build/test-report.xml
+          path: build/test/test-report.xml

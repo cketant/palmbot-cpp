@@ -16,12 +16,12 @@ jobs:
           sudo apt-get install -y build-essential cmake
 
       - name: Configure
-        run: cmake -S . -B build
+        run: cmake --preset build
 
       - name: Build
         run: |
           set -o pipefail
-          cmake --build build 2>&1 | tee build.log
+          cmake --build --preset build 2>&1 | tee build.log
 
       - name: Upload build log on failure
         if: failure()
