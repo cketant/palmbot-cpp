@@ -27,3 +27,7 @@ target_include_directories(PalmCore
   PUBLIC
     .
 )
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GPIOD REQUIRED IMPORTED_TARGET libgpiodcxx)
+target_link_libraries(PalmCore PRIVATE PkgConfig::GPIOD)

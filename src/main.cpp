@@ -1,11 +1,13 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <stop_token>
 #include "hal/linux_i2c_bus.h"
 #include "drivers/mpu6050.h"
 #include "drivers/vl53l0x.h"
 
 int main() {
+
   try {
     LinuxI2CBus bus("/dev/i2c-1");
     MPU6050 mpu6050(bus);

@@ -3,7 +3,9 @@
 #include <iostream>
 #include <cstdio>
 #include <iomanip>
+#include <array>
 
+#include "lib/SPSCQueue.h"
 #include "hal/i2c_device.h"
 
 
@@ -43,9 +45,10 @@ class VL53L0X: public I2CDevice {
     bool reset() override;
 
   private:
-    
-    TOFMeasurement m_{};
 
-    std::array<std::uint8_t, 1> data_{};
+    /**
+     * 3 ring buffer
+     */
+    rigtorp::SPSCQueue<TOFMeasurement> ringQueue{3};
 
 };
