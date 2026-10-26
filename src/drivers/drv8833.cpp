@@ -1,15 +1,43 @@
 #include "drv8833.h"
 
 DRV8833::DRV8833(
-  pins::Motor& motor1, 
-  pins::Motor& motor2, 
-  pins::Gpio& standby,
-  std::string gpioChipPath = "/dev/gpiochip0") {
-    configure();
-  }
+  const pins::Motor& motor1, 
+  const pins::Motor& motor2, 
+  const pins::Gpio& standby,
+  std::string gpioChipPath) : motor1_(motor1, std::filesystem::path{gpioChipPath}), 
+  motor2_(motor2, std::filesystem::path{gpioChipPath}), 
+  nSleep_(standby), 
+  nSleepReq_(
+    gpiod::chip(gpioChipPath)
+      .prepare_request()
+      .set_consumer("set-nsleep")
+      .add_line_settings(
+        standby, 
+        gpiod::line_settings().set_direction(
+          gpiod::line::direction::OUTPUT
+        ))
+      .set_output_values({gpiod::line::value::INACTIVE})
+      .do_request()
+    ) {
+      configure();
+    }
 
-DRV8833::~DRV8833(){}
+DRV8833::~DRV8833(){
+  nSleepReq_.set_value(nSleep_, gpiod::line::value::INACTIVE);
+}
 
 bool DRV8833::configure() {
-  
+  nSleepReq_.set_value(nSleep_, gpiod::line::value::ACTIVE);
+}
+
+bool DRV8833::forward() {
+  return true;
+}
+
+bool DRV8833::reverse() {
+  return true;
+}
+
+bool DRV8833::brake(bool isCoast) {
+  return true;
 }

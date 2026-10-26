@@ -1,6 +1,6 @@
 #include "motor_gpiod.h"
 
-MotorGpiod::MotorGpiod(pins::Motor& motor, const std::filesystem::path& chipPath) : 
+MotorGpiod::MotorGpiod(const pins::Motor& motor, const std::filesystem::path& chipPath) : motor_(motor),
   motorInsReqs_(
     gpiod::chip(chipPath)
       .prepare_request()

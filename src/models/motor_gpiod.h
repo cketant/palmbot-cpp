@@ -4,7 +4,7 @@
 class MotorGpiod {
 
   public:
-    MotorGpiod(pins::Motor& motor, const std::filesystem::path& chipPath);
+    MotorGpiod(const pins::Motor& motor, const std::filesystem::path& chipPath);
 
   private:
     /**
@@ -15,5 +15,9 @@ class MotorGpiod {
      * Motor Encoder pin line requests to read 
      */
     gpiod::line_request motorEncsReqs_;
+    /**
+     * Motor and Encoder pin values
+     */
+    const pins::Motor& motor_;
 
 };
