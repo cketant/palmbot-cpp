@@ -2,9 +2,12 @@
 #include <chrono>
 #include <thread>
 #include <stop_token>
+
+#include "config/pins.h"
 #include "hal/linux_i2c_bus.h"
 #include "drivers/mpu6050.h"
 #include "drivers/vl53l0x.h"
+#include "drivers/drv8833.h"
 
 int main() {
 
@@ -12,12 +15,14 @@ int main() {
     LinuxI2CBus bus("/dev/i2c-1");
     MPU6050 mpu6050(bus);
     VL53L0X vl53l0x(bus);
+    DRV8833 drv8833(pins::leftMotor, pins::rightMotor, pins::MOTOR_STANDBY);
     
     rigtorp::SPSCQueue<Measurement> queue(1024);
 
     std::chrono::steady_clock::time_point::duration period = std::chrono::milliseconds(10);
+    const auto timerStart = std::chrono::steady_clock::now();
+
     std::jthread imuThread{[&](){
-      auto timerStart = std::chrono::steady_clock::now();
       auto next = std::chrono::steady_clock::now();
       while((std::chrono::steady_clock::now() - timerStart) <= std::chrono::seconds(30)) {
         next += period;
@@ -27,6 +32,10 @@ int main() {
         }
         std::this_thread::sleep_until(next);
       }
+    }};
+
+    std::jthread encoderThread{[&](){
+      
     }};
 
     std::jthread loggerThread([&](std::stop_token st) {

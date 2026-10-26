@@ -1,10 +1,23 @@
-#include "config/pins.h"
+#pragma once
+
 #include <gpiod.hpp>
+#include <filesystem>
+#include <chrono>
+
+#include "config/pins.h"
 
 class MotorGpiod {
 
   public:
     MotorGpiod(const pins::Motor& motor, const std::filesystem::path& chipPath);
+
+    void forward(float speed);
+
+    void reverse(float speed);
+
+    void brake(bool isCoast);
+
+    gpiod::edge_event_buffer& getEncoderTicksBlocking(std::chrono::nanoseconds ns);
 
   private:
     /**
@@ -19,5 +32,9 @@ class MotorGpiod {
      * Motor and Encoder pin values
      */
     const pins::Motor& motor_;
+    /**
+     * Counting ticks of the encoders. Call this blocks 
+     */
+    gpiod::edge_event_buffer edgeEventBuffer_ {1024};
 
 };

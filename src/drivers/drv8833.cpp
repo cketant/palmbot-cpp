@@ -28,16 +28,39 @@ DRV8833::~DRV8833(){
 
 bool DRV8833::configure() {
   nSleepReq_.set_value(nSleep_, gpiod::line::value::ACTIVE);
-}
-
-bool DRV8833::forward() {
   return true;
 }
 
-bool DRV8833::reverse() {
+bool DRV8833::forward(float speed) {
+  motor1_.forward(speed);
+  motor2_.forward(speed);
+  return true;
+}
+
+bool DRV8833::reverse(float speed) {
+  motor1_.reverse(speed);
+  motor2_.reverse(speed);
+  return true;
+}
+
+bool DRV8833::turnLeft() {
+  motor1_.brake(false);
+  motor2_.forward(0.3);
+  return true;
+}
+
+bool DRV8833::turnRight() {
+  motor1_.forward(0.3);
+  motor2_.brake(false);
   return true;
 }
 
 bool DRV8833::brake(bool isCoast) {
+  motor1_.brake(isCoast);
+  motor2_.brake(isCoast);
   return true;
+}
+
+void DRV8833::logLeftMotorEncoderTicks(std::chrono::nanoseconds remaining) {
+  motor1_.getEncoderTicksBlocking(remaining);
 }

@@ -1,6 +1,6 @@
 #include "motor_gpiod.h"
 
-MotorGpiod::MotorGpiod(const pins::Motor& motor, const std::filesystem::path& chipPath) : motor_(motor),
+MotorGpiod::MotorGpiod(const pins::Motor& motor, const std::filesystem::path& chipPath) :
   motorInsReqs_(
     gpiod::chip(chipPath)
       .prepare_request()
@@ -24,4 +24,26 @@ MotorGpiod::MotorGpiod(const pins::Motor& motor, const std::filesystem::path& ch
           gpiod::line::edge::BOTH)
         )
       .do_request()
-  ) {};
+  ), motor_(motor) {};
+
+  void MotorGpiod::forward(float speed) {
+    motorInsReqs_.set_values({gpiod::line::value::ACTIVE, gpiod::line::value::INACTIVE});
+  }
+
+  void MotorGpiod::reverse(float speed) {
+    motorInsReqs_.set_values({gpiod::line::value::INACTIVE, gpiod::line::value::ACTIVE});
+  }
+
+  void MotorGpiod::brake(bool isCoast) {
+    if (isCoast) {
+      motorInsReqs_.set_values({gpiod::line::value::INACTIVE, gpiod::line::value::INACTIVE});
+    } else {
+      motorInsReqs_.set_values({gpiod::line::value::ACTIVE, gpiod::line::value::ACTIVE});
+    }
+  }
+
+  gpiod::edge_event_buffer& MotorGpiod::getEncoderTicksBlocking(std::chrono::nanoseconds ns) {
+    if (motorEncsReqs_.wait_edge_events(ns)) {
+      motorEncsReqs_.read_edge_events(edgeEventBuffer_);
+    }
+  }

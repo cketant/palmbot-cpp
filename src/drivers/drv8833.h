@@ -1,6 +1,9 @@
+#pragma once
+
 #include <gpiod.hpp>
-#include <string.h>
+#include <string>
 #include <filesystem>
+#include <chrono>
 
 #include "config/pins.h"
 #include "models/motor_gpiod.h"
@@ -21,14 +24,17 @@ class DRV8833 {
 
     bool configure();
 
-    bool forward();
+    bool forward(float speed=1.0);
 
-    bool reverse();
+    bool reverse(float speed=1.0);
 
-    /**
-     * coast to a halt or immediately halt
-     */
+    bool turnLeft();
+
+    bool turnRight();
+
     bool brake(bool isCoast);
+
+    void logLeftMotorEncoderTicks(std::chrono::nanoseconds remaining);
     
   private:
     /**
