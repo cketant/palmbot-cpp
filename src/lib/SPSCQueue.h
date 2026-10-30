@@ -39,6 +39,7 @@ SOFTWARE.
 #define RIGTORP_NODISCARD
 #endif
 
+// NOLINTBEGIN
 namespace rigtorp {
 
 template <typename T, typename Allocator = std::allocator<T>> class SPSCQueue {
@@ -235,3 +236,5 @@ private:
   alignas(kCacheLineSize) size_t writeIdxCache_ = 0;
 };
 } // namespace rigtorp
+
+// NOLINTEND

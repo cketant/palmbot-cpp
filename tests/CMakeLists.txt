@@ -7,8 +7,6 @@ if(PALMBOT_BUILD_TESTS)
   )
   FetchContent_MakeAvailable(googletest)
 
-  enable_testing()
-
   add_executable(PalmTest)
   target_sources(PalmTest
     PRIVATE

@@ -1,8 +1,7 @@
 name: build
 
 on:
-  push:
-    branches: [main]
+  workflow_call:
 
 jobs:
   build:
@@ -13,15 +12,27 @@ jobs:
       - name: Install build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake
+          sudo apt-get install -y build-essential cmake pkg-config
+
+      - name: Download libgpiod
+        uses: actions/download-artifact@v4
+        with:
+          name: libgpiod-install
+          path: ~/
+
+      - name: Expose libgpiod to CMake
+        run: |
+          tar -xzf "$HOME/libgpiod-install.tar.gz" -C "$HOME"
+          echo "PKG_CONFIG_PATH=$HOME/libgpiod-install/lib/pkgconfig" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=$HOME/libgpiod-install/lib" >> "$GITHUB_ENV"
 
       - name: Configure
-        run: cmake -S . -B build
+        run: cmake --preset build
 
       - name: Build
         run: |
           set -o pipefail
-          cmake --build build 2>&1 | tee build.log
+          cmake --build --preset build 2>&1 | tee build.log
 
       - name: Upload build log on failure
         if: failure()

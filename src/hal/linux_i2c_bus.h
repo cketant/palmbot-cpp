@@ -2,6 +2,7 @@
 
 #include "hal/i2c_bus.h"
 
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 class LinuxI2CBus: public I2CBus {
 
   public:

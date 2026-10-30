@@ -13,8 +13,8 @@ class MPU6050: public I2CDevice {
 
   public:
     MPU6050(I2CBus& bus, 
-      const std::uint8_t deviceAddr = 0x68, 
-      const std::string deviceName = "MPU6050");
+      std::uint8_t deviceAddr = 0x68, 
+      std::string deviceName = "MPU6050");
 
     ~MPU6050() override;
     /**

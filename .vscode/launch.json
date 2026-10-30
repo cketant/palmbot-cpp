@@ -5,7 +5,7 @@
       "name": "Debug Main",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/Main",
+      "program": "${workspaceFolder}/build/build/Main",
       "cwd": "${workspaceFolder}",
       "MIMode": "gdb",
       "preLaunchTask": "cmake --build build"

@@ -1,0 +1,16 @@
+[Unit]
+Description=Daemon for Palmbot
+After=multi-user.target
+
+[Service]
+ExecStart=/home/claude_speaks/Projects/palmbot-cpp/build/build/Main
+Type=exec
+RestartSec=10s
+Restart=on-failure
+KillSignal=SIGINT
+User=claude_speaks
+SupplementaryGroups=gpio i2c
+WorkingDirectory=/home/claude_speaks/Projects/palmbot-cpp
+
+[Install]
+WantedBy=multi-user.target

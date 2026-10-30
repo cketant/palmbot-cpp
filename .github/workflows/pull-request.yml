@@ -1,0 +1,25 @@
+name: pull-request
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, closed]
+
+concurrency:
+  group: pull-request-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  libgpiod:
+    uses: ./.github/workflows/libgpiod.yml
+
+  build:
+    needs: libgpiod
+    uses: ./.github/workflows/build.yml
+
+  lint:
+    needs: build
+    uses: ./.github/workflows/lint.yml
+
+  test:
+    needs: build
+    uses: ./.github/workflows/test.yml

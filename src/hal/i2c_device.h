@@ -1,7 +1,8 @@
 #pragma once
 #include <cstdio>
-#include <string.h>
+#include <cstring>
 #include <optional>
+#include <utility>
 
 #include "hal/i2c_bus.h"
 #include "models/measurement.h"
@@ -62,7 +63,7 @@ class I2CDevice {
 
     I2CDevice(const I2CDevice&) = delete;
 
-    I2CDevice(I2CBus& bus, const std::uint8_t deviceAddr, const std::string deviceName)
-        : bus_(bus), addr_(deviceAddr), deviceName_(deviceName) {};
+    I2CDevice(I2CBus& bus, const std::uint8_t deviceAddr, std::string  deviceName)
+        : bus_(bus), addr_(deviceAddr), deviceName_(std::move(deviceName)) {};
 
 };
