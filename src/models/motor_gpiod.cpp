@@ -45,3 +45,4 @@ MotorGpiod::MotorGpiod(const pins::Motor& motor, const std::filesystem::path& ch
   std::int64_t MotorGpiod::readEncoderTicksBlocking(std::chrono::nanoseconds ns) {
     if (!motorEncsReqs_.wait_edge_events(ns)) return 0;
     return static_cast<int64_t>(motorEncsReqs_.read_edge_events(edgeEventBuffer_));
+  }
