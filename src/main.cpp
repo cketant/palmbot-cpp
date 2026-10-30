@@ -18,24 +18,35 @@ int main() {
     DRV8833 drv8833(pins::leftMotor, pins::rightMotor, pins::MOTOR_STANDBY);
     
     rigtorp::SPSCQueue<Measurement> queue(1024);
+    std::atomic<std::int64_t> leftTicks {0};
 
     std::chrono::steady_clock::time_point::duration period = std::chrono::milliseconds(10);
+    const auto loggingDuration = std::chrono::seconds(30);
     const auto timerStart = std::chrono::steady_clock::now();
 
-    std::jthread imuThread{[&](){
+    std::jthread imuThread{[&](std::stop_token st){
       auto next = std::chrono::steady_clock::now();
-      while((std::chrono::steady_clock::now() - timerStart) <= std::chrono::seconds(30)) {
+      std::int64_t lastTicksCount {0};
+      while((std::chrono::steady_clock::now() - timerStart) <= loggingDuration) {
         next += period;
         auto m = mpu6050.measurement();
         if (m) {
+          std::int64_t currTicksCount = leftTicks.load(std::memory_order_relaxed);
+          m->ticks = currTicksCount - lastTicksCount;
+          lastTicksCount = currTicksCount;
           if (!queue.try_push(m.value())) std::cout << "Failed Push";
         }
         std::this_thread::sleep_until(next);
       }
     }};
 
-    std::jthread encoderThread{[&](){
-      
+    std::jthread encoderThread{[&](std::stop_token st){
+      while (!st.stop_requested()) {
+        leftTicks.fetch_add(
+          drv8833.readLeftMotorEncoderTicks(std::chrono::milliseconds(50)),
+          std::memory_order_relaxed
+        );
+      }
     }};
 
     std::jthread loggerThread([&](std::stop_token st) {
@@ -47,7 +58,7 @@ int main() {
           if (const auto* imu = std::get_if<IMUMeasurement>(&m->data)) {
             if (!t0) t0 = m->timestamp;
             auto elapsedTime = std::chrono::duration<double>(m->timestamp - t0.value()).count();
-            std::cout << "Time: " << elapsedTime << "s | " << "Temperature: " << imu->tempC << std::endl;
+            std::cout << "Time: " << elapsedTime << "s | " << "Temperature: " << imu->tempC << "°C | " << "Ticks: " << m->ticks  << std::endl;
           }
           queue.pop();
         } else if (isStopping && !queue.front()) {
@@ -59,6 +70,7 @@ int main() {
     });
 
     imuThread.join();
+    encoderThread.request_stop();
     loggerThread.request_stop();
   } catch (const std::exception& e) {
     std::cerr << "Error: " << e.what() << '\n';

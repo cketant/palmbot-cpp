@@ -34,15 +34,15 @@ class DRV8833 {
 
     bool brake(bool isCoast);
 
-    void logLeftMotorEncoderTicks(std::chrono::nanoseconds remaining);
+    std::int64_t readLeftMotorEncoderTicks(std::chrono::nanoseconds timeout);
     
   private:
+    MotorGpiod motor1_;
+    MotorGpiod motor2_;
     /**
      * NSleep Pin
      */
     pins::Gpio nSleep_;
-    MotorGpiod motor1_;
-    MotorGpiod motor2_;
     /**
      * The NSleep / StandBy Pin. Low means off
      * High means on.

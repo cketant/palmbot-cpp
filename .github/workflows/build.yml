@@ -5,7 +5,11 @@ on:
     branches: [main]
 
 jobs:
+  libgpiod:
+    uses: ./.github/workflows/libgpiod.yml
+
   build:
+    needs: libgpiod
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -13,7 +17,19 @@ jobs:
       - name: Install build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake
+          sudo apt-get install -y build-essential cmake pkg-config
+
+      - name: Download libgpiod
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.libgpiod.outputs.artifact-name }}
+          path: ~/
+
+      - name: Expose libgpiod to CMake
+        run: |
+          tar -xzf "$HOME/libgpiod-install.tar.gz" -C "$HOME"
+          echo "PKG_CONFIG_PATH=$HOME/libgpiod-install/lib/pkgconfig" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=$HOME/libgpiod-install/lib" >> "$GITHUB_ENV"
 
       - name: Configure
         run: cmake --preset build

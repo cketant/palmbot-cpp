@@ -3,7 +3,7 @@
     {
       "type": "shell",
       "label": "cmake --build build",
-      "command": "cmake --build build --target Main",
+      "command": "cmake --build build/build --target Main",
       "problemMatcher": [
         "$gcc"
       ]

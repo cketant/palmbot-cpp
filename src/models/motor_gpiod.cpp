@@ -42,8 +42,7 @@ MotorGpiod::MotorGpiod(const pins::Motor& motor, const std::filesystem::path& ch
     }
   }
 
-  gpiod::edge_event_buffer& MotorGpiod::getEncoderTicksBlocking(std::chrono::nanoseconds ns) {
-    if (motorEncsReqs_.wait_edge_events(ns)) {
-      motorEncsReqs_.read_edge_events(edgeEventBuffer_);
-    }
+  std::int64_t MotorGpiod::readEncoderTicksBlocking(std::chrono::nanoseconds ns) {
+    if (!motorEncsReqs_.wait_edge_events(ns)) return 0;
+    return motorEncsReqs_.read_edge_events(edgeEventBuffer_);
   }

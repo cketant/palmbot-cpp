@@ -17,7 +17,7 @@ class MotorGpiod {
 
     void brake(bool isCoast);
 
-    gpiod::edge_event_buffer& getEncoderTicksBlocking(std::chrono::nanoseconds ns);
+    std::int64_t readEncoderTicksBlocking(std::chrono::nanoseconds ns);
 
   private:
     /**

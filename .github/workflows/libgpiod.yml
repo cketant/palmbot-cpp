@@ -1,0 +1,67 @@
+name: libgpiod
+
+# Reusable workflow: builds libgpiod with the C++ bindings and uploads it as an
+# artifact. Call it as a job, then download the artifact in a dependent job:
+#
+#   jobs:
+#     libgpiod:
+#       uses: ./.github/workflows/libgpiod.yml
+#     my-job:
+#       needs: libgpiod
+#       steps:
+#         - uses: actions/download-artifact@v4
+#           with:
+#             name: ${{ needs.libgpiod.outputs.artifact-name }}
+#             path: ~/
+#         - run: tar -xzf ~/libgpiod-install.tar.gz -C ~/
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: libgpiod version to build
+        type: string
+        default: "2.2.4"   # match the Pi
+    outputs:
+      artifact-name:
+        description: Name of the uploaded artifact (contains libgpiod-install.tar.gz)
+        value: libgpiod-install
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      LIBGPIOD_VERSION: ${{ inputs.version }}
+    steps:
+      - name: Cache libgpiod
+        id: cache-gpiod
+        uses: actions/cache@v4
+        with:
+          path: ~/libgpiod-install.tar.gz
+          key: libgpiod-${{ env.LIBGPIOD_VERSION }}-${{ runner.os }}-${{ runner.arch }}
+
+      - name: Install tools
+        if: steps.cache-gpiod.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf autoconf-archive automake libtool pkg-config g++ make
+
+      - name: Build libgpiod (C++ bindings)
+        if: steps.cache-gpiod.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch "v${LIBGPIOD_VERSION}" \
+            https://github.com/brgl/libgpiod.git /tmp/libgpiod
+          cd /tmp/libgpiod
+          ./autogen.sh --enable-bindings-cxx --prefix="$HOME/libgpiod-install"
+          make -j"$(nproc)"
+          make install
+          # tar keeps symlinks and permissions, which upload-artifact's zip does not
+          tar -czf "$HOME/libgpiod-install.tar.gz" -C "$HOME" libgpiod-install
+
+      - name: Upload libgpiod
+        uses: actions/upload-artifact@v4
+        with:
+          name: libgpiod-install
+          path: ~/libgpiod-install.tar.gz
+          if-no-files-found: error
+          retention-days: 7

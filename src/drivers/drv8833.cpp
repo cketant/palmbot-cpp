@@ -61,6 +61,7 @@ bool DRV8833::brake(bool isCoast) {
   return true;
 }
 
-void DRV8833::logLeftMotorEncoderTicks(std::chrono::nanoseconds remaining) {
-  motor1_.getEncoderTicksBlocking(remaining);
+std::int64_t DRV8833::readLeftMotorEncoderTicks(std::chrono::nanoseconds timeout) {
+  return motor1_.readEncoderTicksBlocking(timeout);
+  
 }

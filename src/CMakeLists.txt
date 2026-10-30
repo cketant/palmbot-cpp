@@ -6,8 +6,11 @@ target_sources(PalmCore
 
     drivers/mpu6050.cpp
     drivers/vl53l0x.cpp
+    drivers/drv8833.cpp
     
     lib/conversion_math.cpp
+
+    models/motor_gpiod.cpp
   PUBLIC
     config/pins.h
 
@@ -17,11 +20,13 @@ target_sources(PalmCore
 
     drivers/mpu6050.h
     drivers/vl53l0x.h
+    drivers/drv8833.h
 
     lib/conversion_math.h
     lib/SPSCQueue.h
     
     models/measurement.h
+    models/motor_gpiod.h
 )
 target_include_directories(PalmCore
   PUBLIC
