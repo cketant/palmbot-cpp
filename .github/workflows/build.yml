@@ -1,15 +1,10 @@
 name: build
 
 on:
-  push:
-    branches: [main]
+  workflow_call:
 
 jobs:
-  libgpiod:
-    uses: ./.github/workflows/libgpiod.yml
-
   build:
-    needs: libgpiod
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,7 +17,7 @@ jobs:
       - name: Download libgpiod
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.libgpiod.outputs.artifact-name }}
+          name: libgpiod-install
           path: ~/
 
       - name: Expose libgpiod to CMake

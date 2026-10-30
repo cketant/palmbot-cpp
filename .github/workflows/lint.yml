@@ -1,20 +1,10 @@
 name: lint
 
 on:
-  pull_request:
-  push:
-    branches: ['**']
-
-concurrency:
-  group: clang-tidy-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_call:
 
 jobs:
-  libgpiod:
-    uses: ./.github/workflows/libgpiod.yml
-
   clang-tidy:
-    needs: libgpiod
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +17,7 @@ jobs:
       - name: Download libgpiod
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.libgpiod.outputs.artifact-name }}
+          name: libgpiod-install
           path: ~/
 
       - name: Expose libgpiod to CMake
