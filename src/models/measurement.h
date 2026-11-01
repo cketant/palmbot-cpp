@@ -51,3 +51,11 @@ struct Measurement {
   std::variant<IMUMeasurement, TOFMeasurement> data;
   std::int64_t ticks{0};
 };
+
+struct LogMeasurement {
+  std::chrono::steady_clock::time_point timestamp;
+  float tempC{0};
+  std::int64_t leftMotorticks{0};
+  std::int64_t rightMotorticks{0};
+  float distance{0};
+};

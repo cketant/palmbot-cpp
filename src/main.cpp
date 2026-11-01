@@ -19,6 +19,7 @@ int main() {
     
     rigtorp::SPSCQueue<Measurement> queue(1024);
     std::atomic<std::int64_t> leftTicks {0};
+    std::atomic<float> currTofDist {-1};
 
     std::chrono::steady_clock::time_point::duration period = std::chrono::milliseconds(10);
     const auto loggingDuration = std::chrono::seconds(30);
@@ -49,6 +50,17 @@ int main() {
       }
     }};
 
+    std::jthread tofThread{[&](std::stop_token st) {
+      while (!st.stop_requested()) {
+        auto m = vl53l0x.measurement();
+        if (m) {
+          float d = std::get<TOFMeasurement>(m->data).distance;
+          currTofDist.store(d, std::memory_order_relaxed);
+          std::cout << "TOFMeasurement: " << d << "mm" << std::endl;
+        }
+      }
+    }};
+
     std::jthread loggerThread([&](std::stop_token st) {
       std::optional<std::chrono::steady_clock::time_point> t0;
       while (true) {
@@ -71,6 +83,7 @@ int main() {
 
     imuThread.join();
     encoderThread.request_stop();
+    tofThread.request_stop();
     loggerThread.request_stop();
   } catch (const std::exception& e) {
     std::cerr << "Error: " << e.what() << '\n';

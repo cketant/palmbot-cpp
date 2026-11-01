@@ -2,8 +2,8 @@
   "tasks": [
     {
       "type": "shell",
-      "label": "cmake --build build",
-      "command": "cmake --build build/build --target Main",
+      "label": "cmake --build --preset build",
+      "command": "cmake --build --preset build",
       "problemMatcher": [
         "$gcc"
       ]
