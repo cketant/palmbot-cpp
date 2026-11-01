@@ -35,6 +35,8 @@ class DRV8833 {
     bool brake(bool isCoast);
 
     std::int64_t readLeftMotorEncoderTicks(std::chrono::nanoseconds timeout);
+
+    std::int64_t readRightMotorEncoderTicks(std::chrono::nanoseconds timeout);
     
   private:
     MotorGpiod motor1_;

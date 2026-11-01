@@ -33,7 +33,6 @@
     // ioctl returns # of messages sent
     int const sentCount = ioctl(fd_, I2C_RDWR, &data);
     if (sentCount != msgsCount) { 
-      throw std::runtime_error("Read & Write Failed.");
       return false;
     }
     return true;
@@ -48,7 +47,6 @@
     // ioctl returns # of messages sent
     int const sentCount = ioctl(fd_, I2C_RDWR, &data);
     if (sentCount != 1) {
-      throw std::runtime_error("Write Failed.");
       return false;
     }
     return true;

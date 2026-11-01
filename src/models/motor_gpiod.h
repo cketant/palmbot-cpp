@@ -17,6 +17,11 @@ class MotorGpiod {
 
     void brake(bool isCoast);
 
+    /**
+     * Read ticks from the encoder up to the timelimit
+     * @param - ns Timeout for waiting for ticks in nanoseconds
+     * @return - Number of ticks that were returned
+     */
     std::int64_t readEncoderTicksBlocking(std::chrono::nanoseconds ns);
 
   private:
