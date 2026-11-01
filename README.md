@@ -12,13 +12,18 @@ Learn the different layers of electrical engineering, embedded engineering, and 
 [Bill Of Materials](docs/bom.md)
 
 ## Phase I
+#### Complete
 - Raspberry Pi Breadboard bring up of sensors and peripherals
-- Create HAL for I2C Bus
-- Create drivers for sensors and peripherals:
-   - DRV8833
-   - MPU6050
-   - VL530LX
 - Create CAD drawing of palmbot body for 3D printing
+- Create HAL for I2C Bus on linux
+- Create drivers for sensors and peripherals:
+   - DRV8833 (H-Bridge)
+   - MPU6050 (IMU)
+   - VL530LX (ToF)
+- CI/CD Setup:
+   - Lint (clang tidy)
+   - Build (CMake)
+   - Test (GTest)
 
 #### Learnings
 - EE principles and circuits
