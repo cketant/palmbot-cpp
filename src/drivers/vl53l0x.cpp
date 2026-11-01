@@ -25,7 +25,7 @@ std::uint8_t VL53L0X::whoAmI() {
 bool VL53L0X::configure() {
   // Register map (only those not already declared in the header)
   constexpr std::uint8_t IDENTIFICATION_MODEL_ID = 0xC0;
-  constexpr std::uint8_t VHV_CONFIG_PAD_SCL_SDA__EXTSUP_HV = 0x89;
+  constexpr std::uint8_t VHV_CONFIG_PAD_SCL_SDA__EXTSUP_HV = 0x89; // NOLINT
   constexpr std::uint8_t MSRC_CONFIG_CONTROL = 0x60;
   constexpr std::uint8_t MSRC_CONFIG_TIMEOUT_MACROP = 0x46;
   constexpr std::uint8_t FINAL_RANGE_CONFIG_MIN_COUNT_RATE_RTN_LIMIT = 0x44;

@@ -12,7 +12,7 @@ Learn the different layers of electrical engineering, embedded engineering, and 
 [Bill Of Materials](docs/bom.md)
 
 ## Phase I
-#### Complete
+### Complete
 - Raspberry Pi Breadboard bring up of sensors and peripherals
 - Create CAD drawing of palmbot body for 3D printing
 - Create HAL for I2C Bus on linux
@@ -25,12 +25,12 @@ Learn the different layers of electrical engineering, embedded engineering, and 
    - Build (CMake)
    - Test (GTest)
 
-#### Learnings
+### Learnings
 - EE principles and circuits
 - Reading data sheets, register maps, and hardware specs
 - RAII development
 - Heap Profiling
 - CMake configuration
 
-#### Diagram
+### Diagram
 ![Phase1](docs/phase-1/palmbot-pi-connections.png)
